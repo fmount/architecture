@@ -92,6 +92,7 @@ spec:
                 type: LoadBalancer
       storageClass: ""
       storageRequest: 10G
+      keystoneEndpoint: default
   heat:
     apiOverride:
       route: {}
