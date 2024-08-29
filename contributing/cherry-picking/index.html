@@ -12,13 +12,11 @@
         <meta name="author" content="OpenStack Team">
       
       
-        <link rel="canonical" href="https://openstack-k8s-operators.github.io/architecture/contributing/pull-request-testing/">
+        <link rel="canonical" href="https://openstack-k8s-operators.github.io/architecture/contributing/cherry-picking/">
       
       
-        <link rel="prev" href="../documentation/">
+        <link rel="prev" href="../pull-request-testing/">
       
-      
-        <link rel="next" href="../cherry-picking/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -26,7 +24,7 @@
     
     
       
-        <title>Opening pull requests - OpenStack K8S Operators Architectures</title>
+        <title>Getting your PR into a stable branch - OpenStack K8S Operators Architectures</title>
       
     
     
@@ -78,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#opening-pull-requests" class="md-skip">
+        <a href="#getting-your-pr-into-a-stable-branch" class="md-skip">
           Skip to content
         </a>
       
@@ -117,7 +115,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Opening pull requests
+              Getting your PR into a stable branch
             
           </span>
         </div>
@@ -572,6 +570,27 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../pull-request-testing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Opening pull requests
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -584,68 +603,7 @@
         
       
       
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    Opening pull requests
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
       <a href="./" class="md-nav__link md-nav__link--active">
-        
-  
-  <span class="md-ellipsis">
-    Opening pull requests
-  </span>
-  
-
-      </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#using-the-reproducer-role" class="md-nav__link">
-    <span class="md-ellipsis">
-      Using the reproducer role
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../cherry-picking/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -654,6 +612,7 @@
   
 
       </a>
+      
     </li>
   
 
@@ -686,23 +645,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#using-the-reproducer-role" class="md-nav__link">
-    <span class="md-ellipsis">
-      Using the reproducer role
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -719,50 +661,35 @@
   
 
 
-<h1 id="opening-pull-requests">Opening pull requests<a class="headerlink" href="#opening-pull-requests" title="Permanent link">#</a></h1>
-<p>Contributions to the <code>architecture</code> repository are always welcomed and
-encouraged. In order to avoid causing regressions to the repository and to
-prove that the contributions are working as intended, all pull requests are
-expected to provide proof of validation.</p>
-<p>The simplest way is to use the reproducer functionality in the
-<a href="https://ci-framework.readthedocs.io/en/latest/roles/reproducer.html">CI-Framework</a>.</p>
-<h2 id="using-the-reproducer-role">Using the reproducer role<a class="headerlink" href="#using-the-reproducer-role" title="Permanent link">#</a></h2>
-<p>Additional parameters can be passed to the reproducer role of the CI-Framework,
-allowing you validate changes to the architecture repository remain functional
-within the contexts of kustomize and CI-Framework itself (which consumes the
-contents of the architecture repository).</p>
-<p>Use the <code>reproducer.yml</code> playbook within the CI-Framework to deploy the HCI
-validated architecture aka VA1 (or any other validated architecture or
-deployment topology that might be affected) with an environment file containing
-parameters denoting which branch and repository to deploy with. The custom
-parameter filename is not important, as long as it is passed to Ansible, and is
-valid.</p>
-<div class="highlight"><pre><span></span><code>ansible-playbook<span class="w"> </span>reproducer.yml<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>-i<span class="w"> </span>custom/inventory.yml<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>-e<span class="w"> </span><span class="nv">cifmw_target_host</span><span class="o">=</span>hypervisor-1<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>-e<span class="w"> </span>@scenarios/reproducers/va-hci.yml<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>-e<span class="w"> </span>@scenarios/reproducers/networking-definition.yml<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>-e<span class="w"> </span>@custom/default-vars.yaml<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>-e<span class="w"> </span>@custom/secrets.yml<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>-e<span class="w"> </span>@custom/test-my_pr_branch.yml
+<h1 id="getting-your-pr-into-a-stable-branch">Getting your PR into a stable branch<a class="headerlink" href="#getting-your-pr-into-a-stable-branch" title="Permanent link">#</a></h1>
+<p>After your PR merges into the main branch you should open a PR to
+cherry pick it into a stable branch if appropriate. For example,
+you may want your patch to be in the
+<a href="https://github.com/openstack-k8s-operators/architecture/tree/18.0.0-proposed">18.0.0-proposed branch</a>.</p>
+<p>If you anticipate that your PR should be cherry picked then please tag
+it accordingly. For example we have a
+<a href="https://github.com/openstack-k8s-operators/architecture/issues?q=label%3Aneeds-18.0.0-proposed-cherry-pick+">needs-18.0.0-proposed-cherry-pick</a>
+tag. If we think a patch should be in a stable branch, then we will
+apply that tag to your PR to remind you to follow up to send in a
+cherry pick.</p>
+<p>Please do not ask <a href="../../OWNERS">core maintainers</a> to cherry pick your
+patch though we will be happy to review it and help merge it once the
+cherry pick PR has been submitted.</p>
+<p>If you can send a PR to this repository then you can create a cherry
+pick using the <code>git</code> command line tools without requiring any
+additional privileges. For example, the following produces a
+cherry-pick within a personal fork of the architecture repository.
+<div class="highlight"><pre><span></span><code>git remote add upstream git@github.com:openstack-k8s-operators/architecture.git 
+git fetch upstream
+git checkout -b 18.0.0-proposed upstream/18.0.0-proposed
+git push origin 18.0.0-proposed
+git log origin/main
+git cherry-pick &lt;commit hash&gt;
+git push origin 18.0.0-proposed
 </code></pre></div>
-<p>The <code>test-my_pr_branch.yml</code> file contains parameters that identifies the remote
-git repository and branch name to deploy.</p>
-<p><strong>test-my_pr_branch.yml</strong></p>
-<div class="highlight"><pre><span></span><code><span class="nt">remote_base_dir</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;/home/zuul/src/github.com/openstack-k8s-operators&quot;</span>
-<span class="nt">cifmw_reproducer_repositories</span><span class="p">:</span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">src</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;https://github.com/&lt;FORKED_ORGANIZATION&gt;/architecture&quot;</span>
-<span class="w">  </span><span class="nt">dest</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{</span><span class="nv"> </span><span class="s">remote_base_dir</span><span class="nv"> </span><span class="s">}}/architecture&quot;</span>
-<span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;BRANCH_TO_DEPLOY&gt;</span>
-</code></pre></div>
-<p>Once your environment has been deployed, provide any relevant output showing
-that the deployment was successful, and that the environment continues to
-operate nominally. Provide any additional output showing that the changes to
-the architecture repository have been deployed and are functioning as intended
-by the pull request. You can SSH into the controller-0 machine and review the
-contents of <code>/home/zuul/src/github.com/openstack-k8s-operators/architecture</code>
-which contains the content as configured by the <code>test-&lt;NAME&gt;.yml</code> parameter
-file.</p>
+You should then be able to use the github web interface to create the
+PR. Please add <code>(cherry picked from &lt;commit hash&gt;)</code> to the bottom of
+your commit message.</p>
 
 
 
@@ -783,7 +710,7 @@ file.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
     </span>
-    2024-04-29
+    2024-08-06
   </span>
 
     
