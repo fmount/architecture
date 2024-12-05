@@ -12,13 +12,9 @@
         <meta name="author" content="OpenStack Team">
       
       
-        <link rel="canonical" href="https://openstack-k8s-operators.github.io/architecture/contributing/documentation/">
+        <link rel="canonical" href="https://openstack-k8s-operators.github.io/architecture/contributing/common-pitfalls/">
       
       
-        <link rel="prev" href="../../faq/cr_by_components/">
-      
-      
-        <link rel="next" href="../pull-request-testing/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -26,7 +22,7 @@
     
     
       
-        <title>Contributing to documentation - OpenStack K8S Operators Architectures</title>
+        <title>Common Design Pitfalls - OpenStack K8S Operators Architectures</title>
       
     
     
@@ -78,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#contributing-to-documentation" class="md-skip">
+        <a href="#common-design-pitfalls" class="md-skip">
           Skip to content
         </a>
       
@@ -117,7 +113,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Contributing to documentation
+              Common Design Pitfalls
             
           </span>
         </div>
@@ -514,19 +510,17 @@
       
   
   
-    
   
   
-  
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
         
           
           <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
@@ -540,7 +534,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             Contributing
@@ -551,30 +545,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    Contributing to documentation
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../documentation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -583,44 +557,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#rendering-documentation-locally" class="md-nav__link">
-    <span class="md-ellipsis">
-      Rendering documentation locally
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#structure-and-content" class="md-nav__link">
-    <span class="md-ellipsis">
-      Structure and Content
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -702,18 +638,9 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#rendering-documentation-locally" class="md-nav__link">
+  <a href="#accidental-openstackcontrolplane-overwrites" class="md-nav__link">
     <span class="md-ellipsis">
-      Rendering documentation locally
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#structure-and-content" class="md-nav__link">
-    <span class="md-ellipsis">
-      Structure and Content
+      Accidental OpenStackControlPlane Overwrites
     </span>
   </a>
   
@@ -737,37 +664,69 @@
   
 
 
-<h1 id="contributing-to-documentation">Contributing to documentation<a class="headerlink" href="#contributing-to-documentation" title="Permanent link">#</a></h1>
-<h2 id="rendering-documentation-locally">Rendering documentation locally<a class="headerlink" href="#rendering-documentation-locally" title="Permanent link">#</a></h2>
-<p>Install docs build requirements into virtualenv:</p>
-<div class="highlight"><pre><span></span><code>python3 -m venv local/docs-venv
-source local/docs-venv/bin/activate
-pip install -r docs/doc_requirements.txt
+<h1 id="common-design-pitfalls">Common Design Pitfalls<a class="headerlink" href="#common-design-pitfalls" title="Permanent link">#</a></h1>
+<p>This document lists common pitfalls that have been observed in the process of
+creating and modifying VAs and DTs.</p>
+<h2 id="accidental-openstackcontrolplane-overwrites">Accidental OpenStackControlPlane Overwrites<a class="headerlink" href="#accidental-openstackcontrolplane-overwrites" title="Permanent link">#</a></h2>
+<p>In general, it is a best practice to keep all kustomizations (<code>patches</code>,
+<code>replacements</code>, etc) for a particular resource in one <code>kustomization.yaml</code>
+file.</p>
+<p>In some cases it is necessary to only perform a subset of
+<code>OpenStackControlPlane</code> kustomizations at a certain stage of the deployment
+process. For instance, you might not want to kustomize an
+<code>OpenStackControlPlane</code> CR with certain data during its initial creation stage
+because that data is not yet available for use. In the case of a multi-stage
+deployment, it would make sense to have a separate <code>kustomization.yaml</code> file to
+add those kustomizations once the requisite data is available (perhaps during
+the data plane deployment stage).</p>
+<p><strong>What is crucial to keep in mind is that any kustomizations to a resource in
+an earlier stage will be lost/overwritten in later stages where that same
+resource is modified <em>if</em> those stages do not reference the same
+<code>kustomization.yaml</code> that the earlier stage utilized.</strong></p>
+<p>It is best to have a base <code>kustomization.yaml</code> for a given resource for all
+kustomizations common to all stages -- and all those stages should reference
+that <code>kustomization.yaml</code>. If later stages need specific changes for that
+resource, a separate <code>kustomization.yaml</code> can used to apply those additional
+kustomizations beyond the base ones.</p>
+<p>The use of common base files is preferred to creating two nearly-identical
+<code>kustomization.yaml</code> files; one for the earlier stage and one for a later
+stage. Keeping things DRY by using a common base will make future potential
+changes to the <code>kustomization.yaml</code> files less prone to error, as changes to
+the common file will automatically be picked up by all deployment stages.</p>
+<p>As an illustrative example of the best practice mentioned above, consider the
+following directory structure:</p>
+<div class="highlight"><pre><span></span><code>some_dt_or_va/control_plane/kustomization.yaml
+some_dt_or_va/data_plane/kustomization.yaml
 </code></pre></div>
-<p>Serve docs site on localhost:</p>
-<div class="highlight"><pre><span></span><code>mkdocs serve
+<p>If the <code>data_plane/kustomization.yaml</code> needs to modify the
+<code>OpenStackControlPlane</code>, then it should reference
+<code>../control_plane/kustomization.yaml</code> as a <code>Component</code> and then add additional
+<code>replacements</code> and/or <code>patches</code> as needed. </p>
+<p>If it were to instead reference this repositories
+<a href="../../lib/control-plane">lib/control-plane</a> directory as its base
+<code>OpenStackControlPlane</code> <code>Component</code>, then the
+<code>../control_plane/kustomization.yaml</code> kustomizations would be lost, since the
+<code>OpenStackControlPlane</code> CR would be generated and applied without them.</p>
+<p>The kustomizations for an <code>OpenStackControlPlane</code> resource should be within a
+single <code>kustomization.yaml</code> that contains the kustomizations for the initial
+creation stage. You want to avoid the use of multiple files, such as creating
+an additional sub-directory within the same base directory containing the
+configuration. The following would be an example to avoid:</p>
+<div class="highlight"><pre><span></span><code>some_dt_or_va/control_plane/kustomization.yaml
+some_dt_or_va/control_plane/some_subdir/kustomization.yaml
+some_dt_or_va/data_plane/kustomization.yaml
 </code></pre></div>
-<p>Click the link it outputs. As you save changes to files modified in your editor,
-the browser will automatically show the new content.</p>
-<h2 id="structure-and-content">Structure and Content<a class="headerlink" href="#structure-and-content" title="Permanent link">#</a></h2>
-<p>The <code>MkDocs</code> output generates nice looking HTML pages that link to the
-content genereated by github.com.</p>
-<p>This is because the authors believe it's more valuable to have
-<a href="https://github.com/openstack-k8s-operators/architecture">github.com/openstack-k8s-operators/architecture</a>
-be navigable relative to the github pages which contain the CRs,
-than have all of the documentation isolated in the <code>docs</code> directory.
-Thus, there are non-relative links in the <code>MkDocs</code> content to the
-pages hosted on github.</p>
-<p>Though it's
-<a href="https://www.mkdocs.org/user-guide/writing-your-docs/#linking-to-pages">possible</a>
-to create symbolic links to README files or link to a directory above
-the <code>docs</code> directory, the resulting HTML will contain invalid links
-unless all READMEs are moved out of the directories that they
-describe. However, this would make reading the CRs more complicated as
-they wouldn't have a corresponding README.</p>
-<p>Thus, if you add a new VA or DT, then please just link it in the
-<code>mkdocs.yml</code> file, similar to the way the HCI VA is linked, in to keep
-the <code>MkDocs</code> output up to date.</p>
+<p>In some cases having an additional nested directory may be valid, in the case a
+subdirectory was modifying some other resource like
+<code>NodeNetworkConfigurationPolicy</code>.</p>
+<p>If later stages do not want to accidentally overwrite earlier
+<code>OpenStackControlPlane</code> kustomizations, those later stages need to reference
+both <code>../control_plane/kustomization.yaml</code> and
+<code>../control_plane/some_subdir/kustomization.yaml</code> so that those stages are
+modifying the <code>OpenStackControlPlane</code>.</p>
+<p>It would be better for the two directories to be collapsed into one, such that
+a single <code>kustomization.yaml</code> can be referenced as a <code>Component</code> to include all
+the previous stage's kustomizations and not inadvertently overwrite them.</p>
 
 
 
@@ -788,7 +747,7 @@ the <code>MkDocs</code> output up to date.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    2023-12-04
+    2024-11-13
   </span>
 
     
